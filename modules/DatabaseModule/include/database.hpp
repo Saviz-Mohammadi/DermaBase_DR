@@ -120,6 +120,10 @@ signals:
     void finishedRemovingPatientImage(int status, const QString &message);
     void startedUpdatingPatientImageName();
     void finishedUpdatingPatientImageName(int status, const QString &message);
+    void startedUpdatingPatientDeletionStatus();
+    void finishedUpdatingPatientDeletionStatus(int status, const QString &message);
+    void startedGettingPatientDeletionStatus();
+    void finishedGettingPatientDeletionStatus(int status, const QString &message, const bool deletionStatus);
 
     // PUBLIC Slots:
 public slots:
@@ -179,6 +183,8 @@ public:
     Q_INVOKABLE void insertPatientImage(const int patientID, const QString &name, const QByteArray &data);
     Q_INVOKABLE void removePatientImage(const int patientID, const QString &name);
     Q_INVOKABLE void updatePatientImageName(const int patientID, const QString &name, const QString &newName);
+    Q_INVOKABLE void updatePatientDeletionStatus(const int patientID, const bool newStatus);
+    Q_INVOKABLE void getPatientDeletionStatus(const int patientID);
 
     // PRIVATE Methods
 private:

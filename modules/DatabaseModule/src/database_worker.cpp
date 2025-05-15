@@ -4120,55 +4120,129 @@ void DatabaseWorker::updatePatientImageName(const int patientID, const QString &
     return;
 }
 
-// // DELETION
-// QVariantMap Database::changeDeletionStatus(bool newStatus)
-// {
-// #ifdef QT_DEBUG
-//     qDebug() << "objectName :" << this->objectName();
-//     qDebug() << "Arguments  :" << "New status :" << newStatus;
-// #endif
+void DatabaseWorker::updatePatientDeletionStatus(const int patientID, const bool newStatus)
+{
+#ifdef QT_DEBUG
+    qDebug() << "objectName :" << this->objectName();
+    qDebug() << "Arguments  :" << "\n"
+             << "Patient ID :" << patientID << "\n"
+             << "New status :" << newStatus;
+#endif
 
-//     QVariantMap resultMap
-//         {
-//             {"status", QVariant(false)},
-//             {"message", QVariant(QString())}
-//         };
+    emit startedUpdatingPatientDeletionStatus();
 
-//     QSqlQuery query(QSqlDatabase::database(Database::CONNECTIONNAME));
-//     QString queryString = R"(
-//         UPDATE patients SET deletion_status = :newStatus WHERE patient_id = :patient_id;
-//     )";
+    if (!QSqlDatabase::database(c_ConnectionName).transaction())
+    {
+#ifdef QT_DEBUG
+        qDebug() << "Log Output :" << "Transaction could not be started :" << QSqlDatabase::database(c_ConnectionName).lastError().text();
+#endif
 
-//     query.prepare(queryString);
+        emit finishedUpdatingPatientDeletionStatus(-2, "شروع تراکنش شکست خورد: " + QSqlDatabase::database(c_ConnectionName).lastError().text());
 
-//     query.bindValue(":newStatus", newStatus);
-//     query.bindValue(":patient_id", m_PatientDataMap["patient_id"].toUInt());
+        return;
+    }
 
-//     if (!query.exec())
-//     {
-// #ifdef QT_DEBUG
-//         qDebug() << "Log Output :" << "Delete operation failed! :" << query.lastError().text();
-// #endif
+    QString queryString = R"(
+        UPDATE patients SET is_marked_for_deletion = :newStatus
 
-//         resultMap["status"] = false;
-//         resultMap["message"] = query.lastError().text();
+        WHERE patient_id = :patient_id;
+    )";
 
-//         emit queryExecuted(QueryType::DELETE, false, "عملیات حذف ناموفق بود!");
+    QSqlQuery query(QSqlDatabase::database(c_ConnectionName));
 
-//         return (resultMap);
-//     }
+    query.prepare(queryString);
 
-// #ifdef QT_DEBUG
-//     qDebug() << "Log Output :" << "Delete operation succeeded!";
-// #endif
+    query.bindValue(":patient_id", patientID);
+    query.bindValue(":newStatus", newStatus);
 
-//     resultMap["status"] = true;
-//     resultMap["message"] = "Delete operation succeeded!";
+    if (!query.exec())
+    {
+#ifdef QT_DEBUG
+        qDebug() << "Log Output :" << query.lastError().text();
+#endif
 
-//     emit queryExecuted(QueryType::DELETE, true, "عملیات حذف با موفقیت انجام شد!");
+        QSqlDatabase::database(c_ConnectionName).rollback();
 
-//     return (resultMap);
-// }
+        emit finishedUpdatingPatientDeletionStatus(-2, "فرآیند تغییر وضعیت حذف ناموفق بود: " + query.lastError().text());
+
+        return;
+    }
+
+    if (!QSqlDatabase::database(c_ConnectionName).commit())
+    {
+#ifdef QT_DEBUG
+        qDebug() << "Log Output :" << "Commit failed!";
+#endif
+
+        QSqlDatabase::database(c_ConnectionName).rollback();
+
+        emit finishedUpdatingPatientDeletionStatus(-2, "تأیید تغییرات شکست خورد: " + QSqlDatabase::database(c_ConnectionName).lastError().text());
+
+        return;
+    }
+
+#ifdef QT_DEBUG
+    qDebug() << "Log Output :" << "Update patient deletion status succeeded!";
+#endif
+
+    emit finishedUpdatingPatientDeletionStatus(1, "فرآیند تغییر وضعیت حذف موفقیت آمیز بود");
+
+    return;
+}
+
+void DatabaseWorker::getPatientDeletionStatus(const int patientID)
+{
+#ifdef QT_DEBUG
+    qDebug() << "objectName :" << this->objectName();
+    qDebug() << "Arguments  :" << "\n"
+             << "Patient ID :" << patientID;
+#endif
+
+    emit startedGettingPatientDeletionStatus();
+
+    bool deletionStatus = false;
+
+    QString queryString = R"(
+        SELECT is_marked_for_deletion FROM patients
+
+        WHERE patient_id = :patient_id;
+    )";
+
+    QSqlQuery query(QSqlDatabase::database(c_ConnectionName));
+
+    query.prepare(queryString);
+
+    query.bindValue(":patient_id", patientID);
+
+    if (!query.exec())
+    {
+#ifdef QT_DEBUG
+        qDebug() << "Log Output :" << query.lastError().text();
+#endif
+
+        emit finishedGettingPatientDeletionStatus(
+            -2,
+            "فرآیند دریافت اطلاعات حذف بیمار ناموفق بود: " + query.lastError().text(), deletionStatus);
+
+        return;
+    }
+
+    while (query.next())
+    {
+        deletionStatus = query.value("is_marked_for_deletion").toBool();
+    }
+
+#ifdef QT_DEBUG
+    qDebug() << "Log Output :" << "Get patient deletion status information succeeded!";
+#endif
+
+    emit finishedGettingPatientDeletionStatus(
+        1,
+        "فرآیند دریافت اطلاعات حذف بیمار موفقیت آمیز بود", deletionStatus
+    );
+
+    return;
+}
 
 // [[------------------------------------------------------------------------]]
 // [[------------------------------------------------------------------------]]
@@ -4194,3 +4268,4 @@ void DatabaseWorker::updatePatientImageName(const int patientID, const QString &
 
 // [[------------------------------------------------------------------------]]
 // [[------------------------------------------------------------------------]]
+

@@ -702,6 +702,29 @@ ApplicationWindow {
                     break;
                 }
             }
+
+            function onStartedUpdatingPatientDeletionStatus() {
+                mainToast.displayMessage(UFOToast.Status.Info, "درخواست آپدیت وضعیت حذف ارسال شد");
+            }
+
+            function onFinishedUpdatingPatientDeletionStatus(status: int, message: string) {
+                switch(status) {
+                    // Operation finished on fail
+                case -2:
+                    mainToast.displayMessage(UFOToast.Status.Error, message);
+                    break;
+                    // Operation finished on warning
+                case -1:
+                    mainToast.displayMessage(UFOToast.Status.Warning, message);
+                    break;
+                    // Operation finished on success
+                case 1:
+                    mainToast.displayMessage(UFOToast.Status.Success, message);
+                    break;
+                default:
+                    break;
+                }
+            }
         }
 
         Connections {
@@ -977,6 +1000,14 @@ ApplicationWindow {
             function onFinishedUpdatingPatientImageName(status: int, message: string) {
                 mainStatusBar.displayMessage(message);
             }
+
+            function onStartedUpdatingPatientDeletionStatus() {
+                mainStatusBar.displayMessage("درخواست آپدیت وضعیت حذف ارسال شد");
+            }
+
+            function onFinishedUpdatingPatientDeletionStatus(status: int, message: string) {
+                mainStatusBar.displayMessage(message);
+            }
         }
 
         Connections {
@@ -1016,6 +1047,8 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
+
+            currentIndex: 4
 
             StarPage {
                 id: mainStarPage
@@ -1060,13 +1093,6 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
             }
-
-            // UFO_Print {
-            //     id: mainPrint
-
-            //     Layout.fillWidth: true
-            //     Layout.fillHeight: true
-            // }
 
             SettingsPage {
                 id: mainSettingsPage

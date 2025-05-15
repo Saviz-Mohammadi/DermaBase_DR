@@ -52,13 +52,14 @@ Item {
         mainDatabase.getPatientImages(patientID);
         mainDatabase.getLabsList();
         mainDatabase.getPatientLabTests(patientID);
+        mainDatabase.getPatientDeletionStatus(patientID);
 
         qtObjectEditInformation.patientID = patientID;
     }
 
     function performEvaluation() {
-        let totalCallsRequired = 17;
-        let totalSuccessesRequired = 17;
+        let totalCallsRequired = 18;
+        let totalSuccessesRequired = 18;
 
         if(qtObjectEditInformation.countOfCallsCompleted !== totalCallsRequired) {
             return;
@@ -267,6 +268,16 @@ Item {
 
             root.performEvaluation();
         }
+
+        function onFinishedGettingPatientDeletionStatus(status: int) {
+            qtObjectEditInformation.countOfCallsCompleted += 1;
+
+            if(status === 1) {
+                qtObjectEditInformation.countOfCallsSucceeded += 1;
+            }
+
+            root.performEvaluation();
+        }
     }
 
     ScrollView {
@@ -364,6 +375,10 @@ Item {
                         text: qsTr("حذف بیمار")
                         icon.source: "qrc:/resources/icons/material/person_remove.svg"
 
+                        onCheckedChanged: {
+                            mainDatabase.updatePatientDeletionStatus(qtObjectEditInformation.patientID, buttonDeletePatient.checked);
+                        }
+
                         Connections {
                             target: root
 
@@ -372,7 +387,31 @@ Item {
 
                                     buttonDeletePatient.enabled = true;
                                 }
+                            }
+                        }
 
+                        Connections {
+                            target: mainDatabase
+
+                            function onFinishedGettingPatientDeletionStatus(status: int, message: string, deletionStatus: bool) {
+                                if(status === 1) {
+
+                                    buttonDeletePatient.checked = deletionStatus;
+                                }
+                            }
+                        }
+
+                        Connections {
+                            target: mainDatabase
+
+                            function onFinishedUpdatingPatientDeletionStatus(status: int, message: string) {
+                                if(status === 1) {
+
+                                    buttonDeletePatient.checked = true;
+                                    return;
+                                }
+
+                                buttonDeletePatient.checked = false;
                             }
                         }
                     }

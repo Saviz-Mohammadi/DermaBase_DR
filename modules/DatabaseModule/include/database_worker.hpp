@@ -135,20 +135,16 @@ signals:
     void finishedRemovingPatientImage(int status, const QString &message);
     void startedUpdatingPatientImageName();
     void finishedUpdatingPatientImageName(int status, const QString &message);
+    void startedUpdatingPatientDeletionStatus();
+    void finishedUpdatingPatientDeletionStatus(int status, const QString &message);
+    void startedGettingPatientDeletionStatus();
+    void finishedGettingPatientDeletionStatus(int status, const QString &message, const bool deletionStatus);
 
     // PUBLIC Slots:
 public slots:
 
     // PRIVATE Slots:
 private slots:
-
-    /*
-
-    // DELETION
-    Q_INVOKABLE QVariantMap changeDeletionStatus(bool newStatus);
-
-    // Miscellaneous
-    Q_INVOKABLE QVariantMap totalPatients()*/;
 
     // PUBLIC Methods
 public:
@@ -202,6 +198,8 @@ public:
     void insertPatientImage(const int patientID, const QString &name, const QByteArray &data);
     void removePatientImage(const int patienID, const QString &name);
     void updatePatientImageName(const int patientID, const QString &name, const QString &newName);
+    void updatePatientDeletionStatus(const int patientID, const bool newStatus);
+    void getPatientDeletionStatus(const int patientID);
 
     // PRIVATE Methods
 private:

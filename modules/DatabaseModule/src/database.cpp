@@ -772,6 +772,38 @@ Database::Database(QObject *parent, const QString &name)
         Qt::QueuedConnection
     );
 
+    connect(
+        m_DatabaseWorker,
+        &DatabaseWorker::startedUpdatingPatientDeletionStatus,
+        this,
+        &Database::startedUpdatingPatientDeletionStatus,
+        Qt::QueuedConnection
+    );
+
+    connect(
+        m_DatabaseWorker,
+        &DatabaseWorker::finishedUpdatingPatientDeletionStatus,
+        this,
+        &Database::finishedUpdatingPatientDeletionStatus,
+        Qt::QueuedConnection
+    );
+
+    connect(
+        m_DatabaseWorker,
+        &DatabaseWorker::startedGettingPatientDeletionStatus,
+        this,
+        &Database::startedGettingPatientDeletionStatus,
+        Qt::QueuedConnection
+    );
+
+    connect(
+        m_DatabaseWorker,
+        &DatabaseWorker::finishedGettingPatientDeletionStatus,
+        this,
+        &Database::finishedGettingPatientDeletionStatus,
+        Qt::QueuedConnection
+    );
+
     // Start thread:
     m_Thread->start();
 
@@ -1350,6 +1382,27 @@ void Database::updatePatientImageName(const int patientID, const QString &name, 
     );
 }
 
+void Database::updatePatientDeletionStatus(const int patientID, const bool newStatus)
+{
+    QMetaObject::invokeMethod(
+        m_DatabaseWorker,
+        &DatabaseWorker::updatePatientDeletionStatus,
+        Qt::QueuedConnection,
+        patientID,
+        newStatus
+    );
+}
+
+void Database::getPatientDeletionStatus(const int patientID)
+{
+    QMetaObject::invokeMethod(
+        m_DatabaseWorker,
+        &DatabaseWorker::getPatientDeletionStatus,
+        Qt::QueuedConnection,
+        patientID
+    );
+}
+
 // [[------------------------------------------------------------------------]]
 // [[------------------------------------------------------------------------]]
 
@@ -1374,3 +1427,4 @@ void Database::updatePatientImageName(const int patientID, const QString &name, 
 
 // [[------------------------------------------------------------------------]]
 // [[------------------------------------------------------------------------]]
+
