@@ -10,7 +10,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{CCE07283-4DE2-41CC-B2AC-AB45CAC0689A}
+AppId={{7A9A2374-F2F3-4300-AC44-1B9FAB0E0C20}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -33,11 +33,11 @@ AllowNoIcons=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Executable
+OutputDir="C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Package"
 OutputBaseFilename=DermaBase_DR
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile="C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Release\application.ico"
+SetupIconFile="C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Temp\application.ico"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -46,13 +46,13 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Temp\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Temp\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Release\application.ico"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Release\application.ico"; Tasks: desktopicon
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Temp\application.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "C:\Users\Saviz\Documents\Projects\DermaBase_DR\Inno Setup\Temp\application.ico"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
